@@ -1,5 +1,6 @@
 package com.example.babyadminapi.controller.user;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.example.babyadminapi.service.UserService;
 import com.example.babyadminapi.entity.User;
@@ -30,5 +31,12 @@ public class UserController {
         return R.ok()
                 .put("token", token)
                 .put("user", userMapper.toResponse(user));
+    }
+
+    @PostMapping("/logout")
+    @SaCheckLogin
+    public R logout() {
+        StpUtil.logout();
+        return R.ok();
     }
 }
