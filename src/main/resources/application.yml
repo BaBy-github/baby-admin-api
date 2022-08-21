@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -12,3 +17,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect # ??
     show-sql: true
+
+flyway:
+  baseline-on-migrate: true
+
+sa-token:
+  # jwt秘钥
+  jwt-secret-key: asdasdasifhfwqfopwhfwailv345352ojnvsoivweot3425jsdafjk
+  # token前缀
+  token-prefix: Bearer
