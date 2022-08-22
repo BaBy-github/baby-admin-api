@@ -21,7 +21,7 @@ public class R {
 
     public int code;
     public String msg;
-    public Map<String, Object> data;
+    public Object data;
 
     public R() {
         code = ARCO_DESIGN_RESPONSE_SUCCESS_CODE;
@@ -59,11 +59,26 @@ public class R {
         return error(ARCO_DESIGN_RESPONSE_ERROR_CODE, DEFAULT_ERROR_MSG);
     }
 
+    /**
+     * 禁止与data()配合使用
+     */
     public R put(String key, Object value) {
         if (data == null) {
-            data = new HashMap<>();
+            data = new HashMap<String, Object>();
+            ((Map<String, Object>) data).put(key, value);
+        } else if(data instanceof Map){
+            ((Map<String, Object>) data).put(key, value);
+        } else {
+            throw new RuntimeException("< data is not a map.");
         }
-        data.put(key, value);
+        return this;
+    }
+
+    /**
+     * 将data中的数据直接存入data属性中
+     */
+    public R data(Object data) {
+        this.data = data;
         return this;
     }
 }
