@@ -2,14 +2,12 @@ package com.example.babyadminapi.controller.user;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
+import com.example.babyadminapi.service.MenuService;
 import com.example.babyadminapi.service.UserService;
 import com.example.babyadminapi.entity.User;
 import com.example.babyadminapi.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: BaBy
@@ -22,6 +20,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private MenuService menuService;
+
+    @Autowired
     private UserMapper userMapper;
 
     @PostMapping("/login")
@@ -29,8 +30,7 @@ public class UserController {
         User user = userService.login(request.getUsername(), request.getPassword());
         String token = StpUtil.getTokenInfo().getTokenValue();
         return R.ok()
-                .put("token", token)
-                .put("user", userMapper.toResponse(user));
+                .put("token", token);
     }
 
     @PostMapping("/logout")
@@ -38,5 +38,12 @@ public class UserController {
     public R logout() {
         StpUtil.logout();
         return R.ok();
+    }
+
+    @PostMapping("/menu")
+    @SaCheckLogin
+    public R getMenu() {
+        return R.ok()
+                .data(menuService.getMenu());
     }
 }
