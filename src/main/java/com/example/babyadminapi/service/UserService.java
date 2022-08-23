@@ -3,13 +3,16 @@ package com.example.babyadminapi.service;
 import cn.dev33.satoken.stp.StpUtil;
 import com.example.babyadminapi.entity.*;
 import com.example.babyadminapi.exception.incorrect.UsernameOrPasswordIncorrectException;
+import com.example.babyadminapi.exception.notFound.UserNotFoundException;
 import com.example.babyadminapi.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author: BaBy
@@ -85,5 +88,19 @@ public class UserService {
         }
         StpUtil.login(loginUser.getId());
         return loginUser;
+    }
+
+    public List<String> getRolesByUserId(Integer userId) {
+        User user = userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
+        return user.getRoles().stream()
+                .map(Role::getRoleName)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getPermissionsByUserId(Integer userId) {
+        User user = userRepo.findById(userId).orElseThrow(UserNotFoundException::new);
+        return user.getPermission().stream()
+                .map(Permission::getCode)
+                .collect(Collectors.toList());
     }
 }

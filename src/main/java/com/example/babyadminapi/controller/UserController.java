@@ -1,7 +1,9 @@
-package com.example.babyadminapi.controller.user;
+package com.example.babyadminapi.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
+import com.example.babyadminapi.controller.user.LoginRequest;
+import com.example.babyadminapi.controller.user.UserMapper;
 import com.example.babyadminapi.service.MenuService;
 import com.example.babyadminapi.service.UserService;
 import com.example.babyadminapi.entity.User;

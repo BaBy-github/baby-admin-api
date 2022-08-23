@@ -1,4 +1,4 @@
-package com.example.babyadminapi.config;
+package com.example.babyadminapi.config.saTokenConfig;
 
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.stp.StpLogic;

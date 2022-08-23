@@ -16,17 +16,16 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(
         info = @Info(
                 title = "baby-admin-api",
-                description = "简票",
+                description = "baby-admin",
                 version = "1.0"
         ),
-        security = @SecurityRequirement(name = "token")
+        security = @SecurityRequirement(name = "Authorization")
 )
 @SecurityScheme(
-        name = "token",
-        type = SecuritySchemeType.APIKEY,
-        in = SecuritySchemeIn.HEADER,
+        name = "Authorization",
+        type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
-        scheme = "bearer11"
+        scheme = "bearer"
 )
 public class SpringDocConfig {
 }
