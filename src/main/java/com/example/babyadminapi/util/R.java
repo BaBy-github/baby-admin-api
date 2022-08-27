@@ -6,7 +6,6 @@ import java.util.Map;
 /**
  * @author: BaBy
  * @date 2022/2/26 10:42
- * @ClassName: R
  * {
  *     "code": 200,
  *     "msg": "success",
@@ -14,17 +13,35 @@ import java.util.Map;
  * }
  */
 public class R {
-    public static final int ARCO_DESIGN_RESPONSE_SUCCESS_CODE = 20000;
-    public static final int ARCO_DESIGN_RESPONSE_ERROR_CODE = 50000;
-    public static final String DEFAULT_ERROR_MSG = "未知异常，请联系管理员";
-    public static final String DEFAULT_SUCCESS_MSG = "success";
 
     public int code;
     public String msg;
     public Object data;
+    public static final String DEFAULT_SUCCESS_MSG = "success";
+    public static final String DEFAULT_ERROR_MSG = "Unknown exception occurred, please contact the administrator.";
+
+
+    public enum CodeEnum {
+        REQUEST_SUCCESS(20000),
+        BAD_REQUEST(40000),
+        UNLOGIN(40001),
+        PERMISSION_DENIED(40002),
+        NOT_FOUND(40004),
+        UNKNOW_ERROR(50000);
+
+        final int code;
+
+        CodeEnum(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+    }
 
     public R() {
-        code = ARCO_DESIGN_RESPONSE_SUCCESS_CODE;
+        code = CodeEnum.REQUEST_SUCCESS.getCode();
         msg = DEFAULT_SUCCESS_MSG;
     }
 
@@ -44,19 +61,15 @@ public class R {
         return r;
     }
 
-    public static R error(int code, String msg) {
+    public static R error(CodeEnum codeEnum, String msg) {
         R r = new R();
-        r.code = code;
+        r.code = codeEnum.code;
         r.msg = msg;
         return r;
     }
 
-    public static R error(String msg) {
-        return error(ARCO_DESIGN_RESPONSE_ERROR_CODE, msg);
-    }
-
     public static R error() {
-        return error(ARCO_DESIGN_RESPONSE_ERROR_CODE, DEFAULT_ERROR_MSG);
+        return error(CodeEnum.UNKNOW_ERROR, DEFAULT_ERROR_MSG);
     }
 
     /**

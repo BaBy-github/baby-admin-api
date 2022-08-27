@@ -6,7 +6,6 @@ import cn.dev33.satoken.exception.NotRoleException;
 import com.example.babyadminapi.exception.IncorrectException;
 import com.example.babyadminapi.exception.NotFoundException;
 import com.example.babyadminapi.util.R;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,15 +20,15 @@ public class ExceptionAdvice {
     @ExceptionHandler(Exception.class)
     public R exceptionHandler(Exception e) {
         if (e instanceof NotLoginException) {
-            return R.error(HttpStatus.UNAUTHORIZED.value(), "请登录");
+            return R.error(R.CodeEnum.UNLOGIN, "Please login.");
         } else if (e instanceof NotRoleException || e instanceof NotPermissionException) {
-            return R.error(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+            return R.error(R.CodeEnum.PERMISSION_DENIED, e.getMessage());
         }
 
         if (e instanceof IncorrectException) {
-            return R.error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+            return R.error(R.CodeEnum.BAD_REQUEST, e.getMessage());
         } else if (e instanceof NotFoundException) {
-            return R.error(HttpStatus.NOT_FOUND.value(), e.getMessage());
+            return R.error(R.CodeEnum.NOT_FOUND, e.getMessage());
         }
         return R.error();
     }
