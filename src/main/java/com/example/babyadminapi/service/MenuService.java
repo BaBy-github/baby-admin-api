@@ -5,15 +5,16 @@ import com.example.babyadminapi.entity.Menu;
 import com.example.babyadminapi.repository.MenuRepo;
 import com.example.babyadminapi.service.bo.MenuLevel1;
 import com.example.babyadminapi.service.bo.MenuLevel2;
+import com.example.babyadminapi.util.PageUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @Author: BaBy
@@ -40,15 +41,21 @@ public class MenuService {
 
         List<Menu> list = allMenu.stream().filter(menu -> menu.getParentId() != 0).collect(Collectors.toList());
         list.forEach(menu -> {
-                    MenuLevel2 menuLevel2 = new MenuLevel2();
-                    BeanUtils.copyProperties(menu, menuLevel2);
-                    menuLevel2.setMeta(JSONUtil.parseObj(menu.getMetaStr()));
+            MenuLevel2 menuLevel2 = new MenuLevel2();
+            BeanUtils.copyProperties(menu, menuLevel2);
+            menuLevel2.setMeta(JSONUtil.parseObj(menu.getMetaStr()));
 
-                    result.stream()
-                            .filter(menuLevel1 -> Objects.equals(menuLevel1.getId(), menu.getParentId()))
-                            .findFirst()
-                            .ifPresent(menuLevel1 -> menuLevel1.getChildren().add(menuLevel2));
-                });
+            result.stream()
+                    .filter(menuLevel1 -> Objects.equals(menuLevel1.getId(), menu.getParentId()))
+                    .findFirst()
+                    .ifPresent(menuLevel1 -> menuLevel1.getChildren().add(menuLevel2));
+        });
         return result;
+    }
+
+    public PageUtils<Menu> queryMenuList(Integer current, Integer pageSize) {
+        List<Menu> menus = menuRepo.findAll(PageRequest.of(current - 1, pageSize)).toList();
+        long count = menuRepo.count();
+        return new PageUtils<>(menus, count, current, pageSize);
     }
 }

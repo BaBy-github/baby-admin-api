@@ -1,7 +1,7 @@
 package com.example.babyadminapi.service.bo;
 
 import cn.hutool.json.JSONObject;
-import com.example.babyadminapi.entity.Menu;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 /**
@@ -10,9 +10,10 @@ import lombok.Data;
  */
 @Data
 public class MenuLevel2 {
+    @JsonIgnore
     private Integer id;
-    private String path;
     private String name;
     private JSONObject meta;
+    @JsonIgnore
     private Integer parentId;
 }
