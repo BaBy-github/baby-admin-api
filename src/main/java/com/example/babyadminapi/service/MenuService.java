@@ -14,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -32,6 +34,9 @@ public class MenuService {
     public static final String ACRO_DESIGN_SORT_KEY_DESCEND = "descend";
     @Autowired
     private MenuRepo menuRepo;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public List<MenuLevel1> getMenu() {
         List<MenuLevel1> result = new ArrayList<>();
@@ -61,6 +66,7 @@ public class MenuService {
     }
 
     public PageUtils<Menu> queryMenuList(Integer current, Integer pageSize, Menu menuParams, OrderInfoMap orderInfoMap) {
+        entityManager.clear();
         Specification<Menu> menuSpecification = (root, query, criteriaBuilder) -> {
             List<Predicate> list = new ArrayList<>();
             // 动态带参查询
@@ -92,5 +98,9 @@ public class MenuService {
         List<Menu> menus = menuRepo.findAll(menuSpecification, PageRequest.of(current - 1, pageSize)).toList();
         long count = menuRepo.count(menuSpecification);
         return new PageUtils<>(menus, count, current, pageSize);
+    }
+
+    public int deleteMenuByIds(List<Integer> ids) {
+        return menuRepo.deleteAllByIdIn(ids);
     }
 }

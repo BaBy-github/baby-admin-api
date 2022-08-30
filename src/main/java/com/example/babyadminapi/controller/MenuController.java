@@ -2,6 +2,7 @@ package com.example.babyadminapi.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.hutool.core.bean.BeanUtil;
+import com.example.babyadminapi.controller.request.DeleteMenusByIdsRequest;
 import com.example.babyadminapi.controller.request.QueryMenuListRequest;
 import com.example.babyadminapi.entity.Menu;
 import com.example.babyadminapi.service.MenuService;
@@ -28,5 +29,13 @@ public class MenuController {
         PageUtils<Menu> pageUtils = menuService.queryMenuList(request.getCurrent(), request.getPageSize(), menuParams, request.getOrderInfoMap());
         return R.ok()
                 .data(pageUtils);
+    }
+
+    @PostMapping("deleteMenusByIds")
+    @SaCheckRole("admin")
+    public R deleteMenusByIds(@RequestBody DeleteMenusByIdsRequest request) {
+        int row = menuService.deleteMenuByIds(request.getIds());
+        return R.ok()
+                .put("row", row);
     }
 }

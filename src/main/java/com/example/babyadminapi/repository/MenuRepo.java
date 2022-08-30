@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +16,10 @@ import java.util.List;
  */
 public interface MenuRepo extends JpaRepository<Menu, Integer>, JpaSpecificationExecutor<Menu> {
     List<Menu> findAllByStatus(Integer status);
-//    List<Menu> findAllByParams(Specification<Menu> specification, Pageable pageable);
+
     Page<Menu> findAll(Pageable pageable);
+
+    @Transactional
+    @Modifying
+    int deleteAllByIdIn(List<Integer> id);
 }
