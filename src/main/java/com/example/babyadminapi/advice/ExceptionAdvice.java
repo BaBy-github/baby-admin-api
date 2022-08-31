@@ -30,6 +30,7 @@ public class ExceptionAdvice {
         } else if (e instanceof NotFoundException) {
             return R.error(R.CodeEnum.NOT_FOUND, e.getMessage());
         }
+        System.out.println(e.getMessage());
         return R.error();
     }
 }
