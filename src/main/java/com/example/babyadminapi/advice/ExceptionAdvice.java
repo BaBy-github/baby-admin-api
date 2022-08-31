@@ -6,9 +6,12 @@ import cn.dev33.satoken.exception.NotRoleException;
 import com.example.babyadminapi.exception.IncorrectException;
 import com.example.babyadminapi.exception.NotFoundException;
 import com.example.babyadminapi.util.R;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 /**
  * @Author: BaBy
@@ -30,6 +33,16 @@ public class ExceptionAdvice {
         } else if (e instanceof NotFoundException) {
             return R.error(R.CodeEnum.NOT_FOUND, e.getMessage());
         }
+
+        if (e instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException exception = (MethodArgumentNotValidException) e;
+            return R.error(R.CodeEnum.NOT_VALID, Objects.requireNonNull(exception.getBindingResult().getFieldError()).getDefaultMessage());
+        }
+
+        if(e instanceof IllegalAccessException || e instanceof NoSuchFieldException){
+            return R.error();
+        }
+
         System.out.println(e.getMessage());
         return R.error();
     }

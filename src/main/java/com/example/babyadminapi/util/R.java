@@ -26,6 +26,7 @@ public class R {
         BAD_REQUEST(40000),
         UNLOGIN(40001),
         PERMISSION_DENIED(40002),
+        NOT_VALID(40003),
         NOT_FOUND(40004),
         UNKNOW_ERROR(50000);
 

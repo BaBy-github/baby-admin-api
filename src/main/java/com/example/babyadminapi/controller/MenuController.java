@@ -38,4 +38,11 @@ public class MenuController {
         return R.ok()
                 .put("row", row);
     }
+
+    @GetMapping("applyForUpdate")
+    @SaCheckRole("admin")
+    public R applyForUpdate() {
+        return R.ok()
+                .put("updateOperateToken", menuService.getTokenApplyForUpdate());
+    }
 }

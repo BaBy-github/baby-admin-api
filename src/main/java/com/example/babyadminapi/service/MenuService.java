@@ -6,6 +6,7 @@ import com.example.babyadminapi.entity.Menu;
 import com.example.babyadminapi.repository.MenuRepo;
 import com.example.babyadminapi.service.bo.MenuLevel1;
 import com.example.babyadminapi.service.bo.MenuLevel2;
+import com.example.babyadminapi.util.CRUDTokenCatch;
 import com.example.babyadminapi.util.PageUtils;
 import com.example.babyadminapi.util.jpa.OrderInfoMap;
 import org.springframework.beans.BeanUtils;
@@ -14,13 +15,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.el.MethodNotFoundException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -28,12 +32,15 @@ import java.util.stream.Collectors;
  * @Date: 2022/8/21 21:37
  */
 @Service
-public class MenuService {
+public class MenuService implements CRUDService{
     public static final int ENABLE_STATUS = 1;
     public static final String ACRO_DESIGN_SORT_KEY_ASCEND = "ascend";
     public static final String ACRO_DESIGN_SORT_KEY_DESCEND = "descend";
     @Autowired
     private MenuRepo menuRepo;
+
+    @Autowired
+    private CRUDTokenCatch crudTokenCatch;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -102,5 +109,22 @@ public class MenuService {
 
     public int deleteMenuByIds(List<Integer> ids) {
         return menuRepo.deleteAllByIdIn(ids);
+    }
+
+    @Override
+    public int update(Integer id, String field, Object value, String updateOperateToken) throws IllegalAccessException, NoSuchFieldException {
+        Field declaredField = Menu.class.getDeclaredField(field);
+        declaredField.setAccessible(true);
+        Menu menu = menuRepo.findById(id).orElseThrow(MethodNotFoundException::new);
+        declaredField.set(menu, value);
+        Menu saved = menuRepo.save(menu);
+        return 1;
+    }
+
+    @Override
+    public String getTokenApplyForUpdate() {
+        String uuid = UUID.randomUUID().toString();
+        crudTokenCatch.put(uuid, this);
+        return uuid;
     }
 }
