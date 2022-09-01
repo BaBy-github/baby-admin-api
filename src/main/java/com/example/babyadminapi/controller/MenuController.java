@@ -42,7 +42,7 @@ public class MenuController {
     @GetMapping("applyForUpdate")
     @SaCheckRole("admin")
     public R applyForUpdate() {
-        return R.ok()
-                .put("updateOperateToken", menuService.getTokenApplyForUpdate());
+        menuService.setUpdateService2TokenSession();
+        return R.ok();
     }
 }

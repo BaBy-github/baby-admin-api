@@ -23,7 +23,7 @@ public class CRUDController {
 
     @PostMapping("/update")
     public R update(@Valid @RequestBody UpdateFieldRequest request) throws NoSuchFieldException, IllegalAccessException {
-        crudComponent.update(request.getId(), request.getField(), request.getValue(), request.getUpdateOperateToken());
+        crudComponent.update(request.getId(), request.getField(), request.getValue());
         return R.ok();
     }
 }

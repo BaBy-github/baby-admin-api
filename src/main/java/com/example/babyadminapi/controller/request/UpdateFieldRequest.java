@@ -21,7 +21,4 @@ public class UpdateFieldRequest {
 
     @NotNull(message = "value不能为空")
     private Object value;
-
-    @NotBlank(message = "修改时token不能为空")
-    private String updateOperateToken;
 }

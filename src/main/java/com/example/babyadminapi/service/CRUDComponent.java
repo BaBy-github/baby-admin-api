@@ -1,5 +1,6 @@
 package com.example.babyadminapi.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.example.babyadminapi.util.CRUDTokenCatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,10 +11,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CRUDComponent {
-    @Autowired
-    private CRUDTokenCatch crudTokenCatch;
-    public void update(Integer id, String field, Object value, String updateOperateToken) throws NoSuchFieldException, IllegalAccessException {
-        CRUDService service = crudTokenCatch.get(updateOperateToken);
-        service.update(id, field, value, updateOperateToken);
+    public void update(Integer id, String field, Object value) throws NoSuchFieldException, IllegalAccessException {
+        CRUDService service = (CRUDService) StpUtil.getTokenSession().get("updateService");
+        service.update(id, field, value);
     }
 }

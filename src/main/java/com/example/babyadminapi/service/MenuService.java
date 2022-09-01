@@ -1,5 +1,6 @@
 package com.example.babyadminapi.service;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.example.babyadminapi.entity.Menu;
@@ -112,12 +113,12 @@ public class MenuService implements CRUDService{
     }
 
     @Override
-    public int update(Integer id, String field, Object value, String updateOperateToken) throws IllegalAccessException, NoSuchFieldException {
+    public int update(Integer id, String field, Object value) throws IllegalAccessException, NoSuchFieldException {
         Field declaredField = Menu.class.getDeclaredField(field);
         declaredField.setAccessible(true);
         Menu menu = menuRepo.findById(id).orElseThrow(MethodNotFoundException::new);
         declaredField.set(menu, value);
-        Menu saved = menuRepo.save(menu);
+        menuRepo.save(menu);
         return 1;
     }
 
@@ -126,5 +127,10 @@ public class MenuService implements CRUDService{
         String uuid = UUID.randomUUID().toString();
         crudTokenCatch.put(uuid, this);
         return uuid;
+    }
+
+    @Override
+    public void setUpdateService2TokenSession() {
+        StpUtil.getTokenSession().set("updateService", this);
     }
 }
