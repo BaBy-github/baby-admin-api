@@ -1,13 +1,14 @@
 package com.example.babyadminapi.service;
 
-import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.example.babyadminapi.config.CRUDClassMapCache;
+import com.example.babyadminapi.entity.CRUDClass;
 import com.example.babyadminapi.entity.Menu;
 import com.example.babyadminapi.repository.MenuRepo;
 import com.example.babyadminapi.service.bo.MenuLevel1;
 import com.example.babyadminapi.service.bo.MenuLevel2;
-import com.example.babyadminapi.util.CRUDTokenCatch;
 import com.example.babyadminapi.util.PageUtils;
 import com.example.babyadminapi.util.jpa.OrderInfoMap;
 import org.springframework.beans.BeanUtils;
@@ -21,19 +22,17 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static cn.hutool.core.bean.BeanUtil.getFieldValue;
 
 /**
  * @Author: BaBy
  * @Date: 2022/8/21 21:37
  */
 @Service
-public class MenuService implements CRUDService{
+public class MenuService implements CRUDService<Menu> {
     public static final int ENABLE_STATUS = 1;
     public static final String ACRO_DESIGN_SORT_KEY_ASCEND = "ascend";
     public static final String ACRO_DESIGN_SORT_KEY_DESCEND = "descend";
@@ -41,7 +40,7 @@ public class MenuService implements CRUDService{
     private MenuRepo menuRepo;
 
     @Autowired
-    private CRUDTokenCatch crudTokenCatch;
+    private CRUDClassMapCache crudClassMapCache;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -96,7 +95,7 @@ public class MenuService implements CRUDService{
             orderInfoMap.forEach((key, value) -> {
                 if (ACRO_DESIGN_SORT_KEY_ASCEND.equals(value)) {
                     orderList.add(criteriaBuilder.asc(root.get(key)));
-                } else if(ACRO_DESIGN_SORT_KEY_DESCEND.equals(value)){
+                } else if (ACRO_DESIGN_SORT_KEY_DESCEND.equals(value)) {
                     orderList.add(criteriaBuilder.desc(root.get(key)));
                 }
             });
@@ -113,24 +112,19 @@ public class MenuService implements CRUDService{
     }
 
     @Override
-    public int update(Integer id, String field, Object value) throws IllegalAccessException, NoSuchFieldException {
-        Field declaredField = Menu.class.getDeclaredField(field);
-        declaredField.setAccessible(true);
-        Menu menu = menuRepo.findById(id).orElseThrow(MethodNotFoundException::new);
-        declaredField.set(menu, value);
-        menuRepo.save(menu);
+    public int update(Menu toUpdate) {
+        CRUDClass crudClass = crudClassMapCache.get(Menu.class);
+        if (crudClass == null) {
+            Menu menu = menuRepo.findById(toUpdate.getId()).orElseThrow(MethodNotFoundException::new);
+            BeanUtils.copyProperties(toUpdate, menu);
+            menuRepo.save(menu);
+        } else {
+            HashMap<String, Object> map = new HashMap<>();
+            crudClass.getAllowUpdateFieldNameList().forEach(fieldName -> map.put(fieldName, getFieldValue(toUpdate, fieldName)));
+            Menu menu = menuRepo.findById(toUpdate.getId()).orElseThrow(MethodNotFoundException::new);
+            BeanUtil.copyProperties(map, menu);
+            menuRepo.save(menu);
+        }
         return 1;
-    }
-
-    @Override
-    public String getTokenApplyForUpdate() {
-        String uuid = UUID.randomUUID().toString();
-        crudTokenCatch.put(uuid, this);
-        return uuid;
-    }
-
-    @Override
-    public void setUpdateService2TokenSession() {
-        StpUtil.getTokenSession().set("updateService", this);
     }
 }

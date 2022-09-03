@@ -39,10 +39,11 @@ public class MenuController {
                 .put("row", row);
     }
 
-    @GetMapping("applyForUpdate")
+    @PostMapping("update")
     @SaCheckRole("admin")
-    public R applyForUpdate() {
-        menuService.setUpdateService2TokenSession();
-        return R.ok();
+    public R update(@RequestBody Menu menu) {
+        int row = menuService.update(menu);
+        return R.ok()
+                .put("row", row);
     }
 }
